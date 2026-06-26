@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>XP Portfolio</title>
+
+<style>
+/* ================= XP BASE ================= */
+
+body{
+margin:0;
+font-family:Tahoma, sans-serif;
+background:#0a246a;
+overflow:hidden;
+cursor:default;
+}
+
+/* desktop */
+#desktop{
+position:absolute;
+width:100%;
+height:100%;
+background:linear-gradient(#3a6ea5,#0a246a);
+}
+
+/* icons */
+.icon{
+width:80px;
+text-align:center;
+color:white;
+font-size:12px;
+margin:20px;
+cursor:pointer;
+user-select:none;
+}
+.icon img{
+width:40px;
+display:block;
+margin:0 auto;
+}
+
+/* taskbar */
+#taskbar{
+position:absolute;
+bottom:0;
+width:100%;
+height:40px;
+background:linear-gradient(#245edb,#1a3ea0);
+display:flex;
+align-items:center;
+padding:0 5px;
+color:white;
+}
+
+/* start button */
+#start{
+background:linear-gradient(#3c8cff,#1f57d6);
+padding:5px 10px;
+border-radius:5px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* window */
+.window{
+position:absolute;
+width:300px;
+height:200px;
+background:#ece9d8;
+border:2px solid #0a246a;
+box-shadow:3px 3px 0 rgba(0,0,0,0.3);
+display:none;
+}
+
+/* title bar */
+.title{
+background:linear-gradient(#0058ee,#1e3cff);
+color:white;
+padding:5px;
+cursor:move;
+display:flex;
+justify-content:space-between;
+}
+
+/* buttons */
+.btn{
+cursor:pointer;
+padding:0 5px;
+}
+
+/* start menu */
+#menu{
+position:absolute;
+bottom:40px;
+left:0;
+width:180px;
+background:#ece9d8;
+border:2px solid #1e3cff;
+display:none;
+}
+
+.menu-item{
+padding:10px;
+cursor:pointer;
+}
+.menu-item:hover{
+background:#0a246a;
+color:white;
+}
+
+/* clippy */
+#clippy{
+position:absolute;
+bottom:60px;
+right:20px;
+width:200px;
+background:#ffffe1;
+border:1px solid black;
+padding:10px;
+display:none;
+}
+
+/* popup */
+#popup{
+position:absolute;
+top:40%;
+left:40%;
+width:220px;
+background:#ece9d8;
+border:2px solid red;
+display:none;
+padding:10px;
+}
+
+/* fake copy */
+#copy{
+position:absolute;
+top:30%;
+left:35%;
+width:250px;
+background:#fff;
+border:2px solid #333;
+padding:10px;
+display:none;
+}
+
+.bar{
+height:15px;
+background:#0a246a;
+width:0%;
+}
+
+/* cursor blink */
+.cursor{
+border-right:2px solid black;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{border-color:transparent;}
+}
+</style>
+</head>
+
+<body>
+
+<div id="desktop">
+
+<!-- ICONS -->
+<div class="icon" onclick="openWin('about')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Windows_icon_%282002%29.png">
+My Computer
+</div>
+
+<div class="icon" onclick="openWin('projects')">
+📁 Projects
+</div>
+
+<div class="icon" onclick="openWin('contact')">
+💬 Contact
+</div>
+
+<!-- WINDOWS -->
+
+<div class="window" id="about">
+<div class="title" onmousedown="drag(event,this.parentNode)">
+About Me
+<div class="btn" onclick="closeWin('about')">X</div>
+</div>
+<div style="padding:10px">
+Hi, I'm a developer.<br><br>
+I build nostalgic web experiences.<br><br>
+<span class="cursor">_</span>
+</div>
+</div>
+
+<div class="window" id="projects">
+<div class="title" onmousedown="drag(event,this.parentNode)">
+Projects
+<div class="btn" onclick="closeWin('projects')">X</div>
+</div>
+<div style="padding:10px">
+- XP Portfolio OS<br>
+- AI Chatbot<br>
+- Game Engine<br><br>
+<button onclick="fakeCopy()">Copy Files</button>
+</div>
+</div>
+
+<div class="window" id="contact">
+<div class="title" onmousedown="drag(event,this.parentNode)">
+Contact
+<div class="btn" onclick="closeWin('contact')">X</div>
+</div>
+<div style="padding:10px">
+Email: dev@example.com<br>
+GitHub: /dev<br><br>
+<button onclick="showPopup()">Send Error?</button>
+</div>
+</div>
+
+<!-- START MENU -->
+<div id="menu">
+<div class="menu-item">My Computer</div>
+<div class="menu-item">Projects</div>
+<div class="menu-item">Shut Down</div>
+</div>
+
+<!-- CLIPPY -->
+<div id="clippy">
+<b>Clippy:</b><br>
+It looks like you're building a portfolio!<br><br>
+<button onclick="hideClippy()">OK</button>
+</div>
+
+<!-- POPUP -->
+<div id="popup">
+<b>Error</b><br><br>
+Too much nostalgia detected.<br><br>
+<button onclick="hidePopup()">OK</button>
+</div>
+
+<!-- COPY -->
+<div id="copy">
+Copying files...<br><br>
+<div style="width:100%;height:10px;background:#ccc">
+<div class="bar" id="bar"></div>
+</div>
+</div>
+
+<!-- TASKBAR -->
+<div id="taskbar">
+<div id="start" onclick="toggleMenu()">Start</div>
+<div style="margin-left:10px">XP Portfolio</div>
+</div>
+
+</div>
+
+<script>
+
+/* ================= CORE ================= */
+
+function openWin(id){
+document.getElementById(id).style.display="block";
+bringToFront(id);
+}
+
+function closeWin(id){
+document.getElementById(id).style.display="none";
+}
+
+/* layering */
+let z=10;
+function bringToFront(id){
+let el=document.getElementById(id);
+el.style.zIndex=++z;
+}
+
+/* drag windows */
+function drag(e,el){
+let offsetX=e.clientX-el.offsetLeft;
+let offsetY=e.clientY-el.offsetTop;
+
+document.onmousemove=(e)=>{
+el.style.left=(e.clientX-offsetX)+"px";
+el.style.top=(e.clientY-offsetY)+"px";
+};
+
+document.onmouseup=()=>{
+document.onmousemove=null;
+};
+}
+
+/* start menu */
+function toggleMenu(){
+let m=document.getElementById("menu");
+m.style.display = m.style.display==="block"?"none":"block";
+}
+
+/* clippy */
+setTimeout(()=>{
+document.getElementById("clippy").style.display="block";
+},4000);
+
+function hideClippy(){
+document.getElementById("clippy").style.display="none";
+}
+
+/* popup */
+function showPopup(){
+document.getElementById("popup").style.display="block";
+}
+function hidePopup(){
+document.getElementById("popup").style.display="none";
+}
+
+/* fake copy */
+function fakeCopy(){
+let c=document.getElementById("copy");
+let bar=document.getElementById("bar");
+c.style.display="block";
+let w=0;
+
+let i=setInterval(()=>{
+w+=5;
+bar.style.width=w+"%";
+
+if(w>=100){
+clearInterval(i);
+setTimeout(()=>c.style.display="none",1000);
+}
+},200);
+}
+
+/* easter egg */
+let clicks=0;
+document.getElementById("start").onclick=()=>{
+clicks++;
+toggleMenu();
+if(clicks>5){
+document.getElementById("popup").style.display="block";
+}
+};
+
+</script>
+
+</body>
+</html>
